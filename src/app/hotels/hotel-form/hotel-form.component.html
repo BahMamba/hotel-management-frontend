@@ -1,28 +1,59 @@
-<div class="max-w-xl mx-auto p-6 bg-white shadow rounded-lg">
-    <h2 class="text-2xl font-bold mb-4">
-      {{ hotelId ? 'Edit Hotel' : 'Add Hotel' }}
+<div class="min-h-screen bg-blue-100 py-8">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-blue-800 mb-6 text-center">
+      {{ hotelId ? 'Modifier un Hôtel' : 'Ajouter un Hôtel' }}
     </h2>
-  
-    <form [formGroup]="hotelForm" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label class="block font-semibold mb-1">Name</label>
-        <input formControlName="name" class="w-full border rounded px-3 py-2" />
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold mb-1">Address</label>
-        <input formControlName="address" class="w-full border rounded px-3 py-2" />
-      </div>
-      <div class="mb-4">
-        <label class="block font-semibold mb-1">City</label>
-        <input formControlName="city" class="w-full border rounded px-3 py-2" />
-      </div>
-  
-      <div *ngIf="errorMessage" class="mb-4 text-red-600">{{ errorMessage }}</div>
-      <div *ngIf="successMessage" class="mb-4 text-green-600">{{ successMessage }}</div>
-  
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        {{ hotelId ? 'Update' : 'Create' }}
-      </button>
-    </form>
+
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md border border-blue-200">
+      <form [formGroup]="hotelForm" (ngSubmit)="onSubmit()">
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-1">Nom</label>
+          <input formControlName="name" placeholder="Nom de l'hôtel"
+                 class="w-full px-4 py-2 rounded-lg border"
+                 [ngClass]="{'border-red-500': hotelForm.controls['name'].touched && hotelForm.controls['name'].invalid, 'border-blue-300': !hotelForm.controls['name'].invalid}" />
+          <div *ngIf="hotelForm.controls['name'].touched && hotelForm.controls['name'].invalid" class="text-red-600 text-sm mt-1">
+            Le nom est requis.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-1">Adresse</label>
+          <input formControlName="address" placeholder="Adresse"
+                 class="w-full px-4 py-2 rounded-lg border"
+                 [ngClass]="{'border-red-500': hotelForm.controls['address'].touched && hotelForm.controls['address'].invalid, 'border-blue-300': !hotelForm.controls['address'].invalid}" />
+          <div *ngIf="hotelForm.controls['address'].touched && hotelForm.controls['address'].invalid" class="text-red-600 text-sm mt-1">
+            L'adresse est requise.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-1">Ville</label>
+          <input formControlName="city" placeholder="Ville"
+                 class="w-full px-4 py-2 rounded-lg border"
+                 [ngClass]="{'border-red-500': hotelForm.controls['city'].touched && hotelForm.controls['city'].invalid, 'border-blue-300': !hotelForm.controls['city'].invalid}" />
+          <div *ngIf="hotelForm.controls['city'].touched && hotelForm.controls['city'].invalid" class="text-red-600 text-sm mt-1">
+            La ville est requise.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-1">Description</label>
+          <input formControlName="description" placeholder="Description (optionnel)"
+                 class="w-full px-4 py-2 rounded-lg border border-blue-300" />
+        </div>
+
+        <div *ngIf="errorMessage" class="mb-4 p-2 bg-red-100 text-red-800 rounded-lg text-center">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="mb-4 p-2 bg-green-100 text-green-800 rounded-lg text-center">
+          {{ successMessage }}
+        </div>
+
+        <button type="submit" [disabled]="hotelForm.invalid"
+                class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors">
+          {{ hotelId ? 'Mettre à jour' : 'Ajouter' }}
+        </button>
+      </form>
+    </div>
   </div>
-  
+</div>

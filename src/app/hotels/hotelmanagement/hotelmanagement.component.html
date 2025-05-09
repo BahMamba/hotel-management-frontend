@@ -1,0 +1,86 @@
+<div class="min-h-screen bg-gradient-to-br from-[#4FC3F7] via-[#E0F2FE] to-[#4CAF50] py-6">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-[#1E3A8A] mb-6 text-center tracking-tight">Gestion des Hôtels</h2>
+
+    <!-- Messages -->
+    <div *ngIf="errorMessage" class="mb-4 p-3 bg-[#FECACA] text-[#991B1B] rounded-md shadow text-center">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="mb-4 p-3 bg-[#BBF7D0] text-[#166534] rounded-md shadow text-center">
+      {{ successMessage }}
+    </div>
+
+    <!-- Bouton Ajouter -->
+    <div class="mb-6 flex justify-end">
+      <button [routerLink]="['/hotels/hotel/new']"
+              class="flex items-center gap-2 px-4 py-2 bg-[#22C55E] text-white font-medium rounded-md shadow-md hover:bg-[#16A34A] transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4v16m8-8H4"/>
+        </svg>
+        Ajouter un Hôtel
+      </button>
+    </div>
+
+    <!-- Grille des hôtels -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let hotel of hotels"
+           class="bg-[#F8FAFC] rounded-md shadow-md border border-[#BAE6FD] p-4 hover:shadow-lg transition-all duration-200">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xl font-semibold text-[#1E3A8A]">{{ hotel.name }}</h3>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#60A5FA]" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 17l4 4 4-4m0-5l-4-4-4 4"/>
+          </svg>
+        </div>
+        <p class="text-[#4B5563] text-sm"><strong>Adresse :</strong> {{ hotel.address }}</p>
+        <p class="text-[#4B5563] text-sm"><strong>Ville :</strong> {{ hotel.city }}</p>
+        <p class="text-[#4B5563] text-sm"><strong>Description :</strong> {{ hotel.description || 'N/A' }}</p>
+        <div class="mt-4 flex justify-end space-x-2">
+          <button [routerLink]="['/hotels/hotel/edit', hotel.id]"
+                  class="flex items-center gap-1 px-3 py-1.5 bg-[#F59E0B] text-white rounded-md shadow hover:bg-[#D97706] transition-all duration-200">
+            ✏️ Modifier
+          </button>
+          <button (click)="confirmDelete(hotel.id!)"
+                  class="flex items-center gap-1 px-3 py-1.5 bg-[#EF4444] text-white rounded-md shadow hover:bg-[#DC2626] transition-all duration-200">
+            🗑️ Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aucun hôtel -->
+    <div *ngIf="hotels.length === 0 && !errorMessage" class="text-center text-[#4B5563] mt-8">
+      <p class="text-base italic">Aucun hôtel trouvé.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-8 flex justify-center items-center space-x-4">
+      <button [disabled]="currentPage === 0" (click)="changePage(currentPage - 1)"
+              class="px-4 py-2 bg-[#2563EB] text-white rounded-md shadow-md disabled:opacity-40 hover:bg-[#1D4ED8] transition-all duration-200">
+        ◀ Précédent
+      </button>
+      <span class="text-[#1E3A8A] font-semibold text-base">Page {{ currentPage + 1 }} / {{ page.page.totalPages }}</span>
+      <button [disabled]="currentPage >= page.page.totalPages - 1" (click)="changePage(currentPage + 1)"
+              class="px-4 py-2 bg-[#2563EB] text-white rounded-md shadow-md disabled:opacity-40 hover:bg-[#1D4ED8] transition-all duration-200">
+        Suivant ▶
+      </button>
+    </div>
+
+    <!-- Modal suppression -->
+    <div *ngIf="hotelToDelete" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-md p-5 shadow-xl max-w-md w-full border border-[#FCA5A5]">
+        <h3 class="text-lg font-semibold text-[#991B1B] mb-3">⚠️ Confirmer la suppression</h3>
+        <p class="text-[#4B5563] mb-5">Voulez-vous vraiment supprimer cet hôtel ? Cette action est irréversible.</p>
+        <div class="flex justify-end gap-3">
+          <button (click)="cancelDelete()"
+                  class="px-3 py-1.5 bg-[#E5E7EB] text-[#1F2937] rounded-md hover:bg-[#D1D5DB] transition-all duration-200">Annuler</button>
+          <button (click)="deleteHotel()"
+                  class="px-3 py-1.5 bg-[#EF4444] text-white rounded-md hover:bg-[#DC2626] transition-all duration-200">Supprimer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

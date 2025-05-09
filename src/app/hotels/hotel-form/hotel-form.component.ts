@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HotelService } from '../../services/hotel.service';
 import { Hotel } from '../../models/hotel.model';
@@ -10,7 +10,7 @@ import { Hotel } from '../../models/hotel.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './hotel-form.component.html',
-  styleUrl: './hotel-form.component.css'
+  styles: []
 })
 export class HotelFormComponent implements OnInit {
   hotelForm: FormGroup;
@@ -20,54 +20,60 @@ export class HotelFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private service: HotelService,
+    private hotelService: HotelService,
     private route: ActivatedRoute,
     private router: Router
   ) {
     this.hotelForm = this.fb.group({
       name: ['', Validators.required],
       address: ['', Validators.required],
-      city: ['', Validators.required]
+      city: ['', Validators.required],
+      description: ['']
     });
   }
 
   ngOnInit(): void {
     this.hotelId = Number(this.route.snapshot.paramMap.get('id'));
     if (this.hotelId) {
-      this.service.getHotel(this.hotelId).subscribe({
-        next: hotel => this.hotelForm.patchValue(hotel),
-        error: err => this.errorMessage = 'Hotel not found.'
+      this.hotelService.getHotel(this.hotelId).subscribe({
+        next: (hotel) => this.hotelForm.patchValue(hotel),
+        error: (err) => {
+          this.errorMessage = 'Erreur lors du chargement des données de l\'hôtel : ' + (err.message || 'Veuillez réessayer.');
+        }
       });
     }
   }
 
   onSubmit(): void {
     if (this.hotelForm.invalid) {
-      this.errorMessage = 'Please fill all required fields correctly.';
+      this.hotelForm.markAllAsTouched();
+      this.errorMessage = 'Veuillez remplir tous les champs obligatoires correctement.';
       return;
     }
 
-    const hotel: Hotel = this.hotelForm.value;
+    const hotelData: Partial<Hotel> = this.hotelForm.value;
     this.errorMessage = null;
     this.successMessage = null;
 
     if (this.hotelId) {
-      // 🔁 Mise à jour
-      this.service.updateHotel(this.hotelId, hotel).subscribe({
+      this.hotelService.updateHotel(this.hotelId, hotelData).subscribe({
         next: () => {
-          this.successMessage = 'Hotel updated successfully!';
-          setTimeout(() => this.router.navigate(['/hotels']), 2000);
+          this.successMessage = 'Hôtel mis à jour avec succès !';
+          setTimeout(() => this.router.navigate(['/hotels/admin-space']), 2000);
         },
-        error: err => this.errorMessage = err.message
+        error: (err) => {
+          this.errorMessage = 'Erreur lors de la mise à jour : ' + (err.message || 'Veuillez réessayer.');
+        }
       });
     } else {
-      // ➕ Création
-      this.service.addHotel(hotel).subscribe({
+      this.hotelService.addHotel(hotelData).subscribe({
         next: () => {
-          this.successMessage = 'Hotel created successfully!';
-          setTimeout(() => this.router.navigate(['/hotels']), 2000);
+          this.successMessage = 'Hôtel créé avec succès !';
+          setTimeout(() => this.router.navigate(['/hotels/admin-space']), 2000);
         },
-        error: err => this.errorMessage = err.message
+        error: (err) => {
+          this.errorMessage = 'Erreur lors de l\'ajout : ' + (err.message || 'Veuillez réessayer.');
+        }
       });
     }
   }
